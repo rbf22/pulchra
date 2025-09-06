@@ -1,4 +1,3 @@
-
 //
 // PULCHRA
 // Protein Chain Restoration Algorithm
@@ -25,13 +24,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/timeb.h>
+#include <time.h>
 
 #define uchar unsigned char
 #define uint unsigned int
 #define real double
 
 #include "pulchra_common.h"
-#include <time.h>
 
 #define PULCHRA_VERSION 3.04
 #define MAX_BUF_SIZE 1000
@@ -954,7 +953,7 @@ void ca_optimize(char *tname, char *iname)
         if (out) {
           fprintf(out,"MODEL  %d\n",mnum++);
           for (i=0; i<chain_length; i++) {
-            fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
+            fprintf(out, "ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                     i+1, "CA ", c_alpha[i]->res->name, ' ', c_alpha[i]->res->num,
   				          c_alpha[i]->x, c_alpha[i]->y, c_alpha[i]->z);
 
@@ -1209,7 +1208,7 @@ void write_pdb(char *name, mol_type *mol)
                 !(atom->name[0]=='S' && atom->name[1]=='C') &&
                 !(atom->name[0]=='C' && atom->name[1]=='M') &&
                 !(atom->name[0]=='H' && !_GENERATE_HYDROGENS))
-              fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
+              fprintf(out, "ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                             anum++, atom->name, res->name, ' ', res->num,
     	    				          atom->x, atom->y, atom->z);
       			atom=atom->next;
@@ -1223,7 +1222,7 @@ void write_pdb(char *name, mol_type *mol)
                 !(atom->name[0]=='O' && atom->name[1]==' ') &&
                 !(atom->name[0]=='C' && atom->name[1]=='M') &&
                 !(atom->name[0]=='H' && !_GENERATE_HYDROGENS))
-              fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
+              fprintf(out, "ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                             anum++, atom->name, res->name, ' ', res->num,
     	    				          atom->x, atom->y, atom->z);
       			atom=atom->next;
@@ -1233,7 +1232,7 @@ void write_pdb(char *name, mol_type *mol)
             if (((atom->name[0]=='C' && atom->name[1]==' ') ||
                 (atom->name[0]=='O' && atom->name[1]==' ')) &&
                !(atom->name[0]=='H' && !_GENERATE_HYDROGENS))
-              fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
+              fprintf(out, "ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                             anum++, atom->name, res->name, ' ', res->num,
     	    				          atom->x, atom->y, atom->z);
       			atom=atom->next;
@@ -1267,12 +1266,12 @@ void write_pdb_sg(char *name, mol_type *mol)
         atom = res->atoms;
         while (atom) {
           if ((atom->name[0]=='C' && atom->name[1]=='A'))
-            fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
+            fprintf(out, "ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                           anum++, atom->name, res->name, ' ', res->num,
     	  				          atom->x, atom->y, atom->z);
     			atom=atom->next;
     		}
-        fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
+        fprintf(out, "ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                       anum++, "CM ", res->name, ' ', res->num,
     				          res->cmx, res->cmy, res->cmz);
     	}
@@ -3259,4 +3258,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-

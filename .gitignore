@@ -33,3 +33,9 @@ venv.bak/
 # Project-specific ignores for pulchra
 c_legacy/bin/
 c_legacy/examples/model.rebuilt.pdb
+
+# Coverage reports
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/

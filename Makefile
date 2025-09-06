@@ -13,7 +13,7 @@ build:
 	(cd c_legacy/src && cc -O3 -o ../bin/pulchra pulchra.c pulchra_data.c -lm)
 
 run-tests: build
-	poetry run pytest -s tests/
+	poetry run pytest -s --cov=. --cov-report=term-missing tests/
 
 run-linter:
 	poetry run ruff check .
@@ -22,10 +22,10 @@ run-linter-fix:
 	poetry run ruff check . --fix
 
 run-pylint:
-	poetry run pylint tests
+	poetry run pylint .
 
 run-mypy:
-	poetry run mypy --explicit-package-bases tests
+	poetry run mypy --explicit-package-bases .
 
 run-deptry:
 	poetry run deptry .

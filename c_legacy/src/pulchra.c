@@ -3086,7 +3086,7 @@ void add_hydrogens(mol_type *mol) {
           new_h->y = atom->y + hy;
           new_h->z = atom->z + hz;
           new_h->name = calloc(5,1);
-          strcpy(new_h->name, " H  ");
+          strcpy(new_h->name, "H  ");
           new_h->res = res;
           new_h->flag = FLAG_BACKBONE;
 

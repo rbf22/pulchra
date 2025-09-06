@@ -10,6 +10,9 @@ requires-python = ">=3.12"
 dependencies = [
 ]
 
+[tool.poetry]
+package-mode = false
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -17,4 +20,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
+ruff = "^0.5.5"
+pylint = "^3.2.6"
+mypy = "^1.11.0"
+deptry = "^0.17.0"
 

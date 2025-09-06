@@ -2,10 +2,13 @@ import subprocess
 import pytest
 from pathlib import Path
 
-PULCHRA_EXECUTABLE = Path("c_legacy/bin/pulchra")
-INPUT_PDB = Path("c_legacy/examples/model.pdb")
-OUTPUT_PDB = Path("c_legacy/examples/model.rebuilt.pdb")
-GOLDEN_OUTPUTS_DIR = Path("tests/golden_outputs")
+TEST_FILE_PATH = Path(__file__).resolve()
+PROJECT_ROOT = TEST_FILE_PATH.parent.parent
+
+PULCHRA_EXECUTABLE = PROJECT_ROOT / "c_legacy/bin/pulchra"
+INPUT_PDB = PROJECT_ROOT / "c_legacy/examples/model.pdb"
+OUTPUT_PDB = PROJECT_ROOT / "c_legacy/examples/model.rebuilt.pdb"
+GOLDEN_OUTPUTS_DIR = PROJECT_ROOT / "tests/golden_outputs"
 
 TEST_CASES = [
     ([], "model.rebuilt.default.pdb"),

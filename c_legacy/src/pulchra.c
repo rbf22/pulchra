@@ -31,6 +31,7 @@
 #define real double
 
 #include "pulchra_common.h"
+#include <time.h>
 
 #define PULCHRA_VERSION 3.04
 #define MAX_BUF_SIZE 1000
@@ -67,6 +68,7 @@ int _CENTER_CHAIN = 0;
 int _REBUILD_BB = 1;
 int _REBUILD_SC = 1;
 int _REBUILD_H = 0;
+int _GENERATE_HYDROGENS = 0;
 int _PDB_SG = 0;
 int _TIME_SEED = 0;
 int _XVOLUME = 1;
@@ -1206,7 +1208,7 @@ void write_pdb(char *name, mol_type *mol)
             if (!(atom->name[0]=='D' && atom->name[1]=='U') &&
                 !(atom->name[0]=='S' && atom->name[1]=='C') &&
                 !(atom->name[0]=='C' && atom->name[1]=='M') &&
-                !(atom->name[0]=='H' && !_REBUILD_H))
+                !(atom->name[0]=='H' && !_GENERATE_HYDROGENS))
               fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                             anum++, atom->name, res->name, ' ', res->num,
     	    				          atom->x, atom->y, atom->z);
@@ -1220,7 +1222,7 @@ void write_pdb(char *name, mol_type *mol)
                 !(atom->name[0]=='C' && atom->name[1]==' ') &&
                 !(atom->name[0]=='O' && atom->name[1]==' ') &&
                 !(atom->name[0]=='C' && atom->name[1]=='M') &&
-                !(atom->name[0]=='H' && !_REBUILD_H))
+                !(atom->name[0]=='H' && !_GENERATE_HYDROGENS))
               fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                             anum++, atom->name, res->name, ' ', res->num,
     	    				          atom->x, atom->y, atom->z);
@@ -1230,7 +1232,7 @@ void write_pdb(char *name, mol_type *mol)
           while (atom) {
             if (((atom->name[0]=='C' && atom->name[1]==' ') ||
                 (atom->name[0]=='O' && atom->name[1]==' ')) &&
-               !(atom->name[0]=='H' && !_REBUILD_H))
+               !(atom->name[0]=='H' && !_GENERATE_HYDROGENS))
               fprintf(out, "ATOM  %5d  %-3s %3s %c%4d    %8.3f%8.3f%8.3f\n",
                             anum++, atom->name, res->name, ' ', res->num,
     	    				          atom->x, atom->y, atom->z);
@@ -3054,6 +3056,53 @@ FILE *out;
 
 }
 
+void add_hydrogens(mol_type *mol) {
+  res_type *res;
+  atom_type *atom, *c_atom, *ca_atom, *new_h;
+  real hx, hy, hz, dd;
+
+  res = mol->residua;
+  while (res) {
+    if (res->prev) { // cannot add H to first residue's N
+      atom = find_atom(res, "N  ");
+      if (atom) {
+        c_atom = find_atom(res->prev, "C  ");
+        ca_atom = find_atom(res, "CA ");
+        if (c_atom && ca_atom) {
+          hx = (c_atom->x + ca_atom->x) / 2.0;
+          hy = (c_atom->y + ca_atom->y) / 2.0;
+          hz = (c_atom->z + ca_atom->z) / 2.0;
+
+          hx = atom->x - hx;
+          hy = atom->y - hy;
+          hz = atom->z - hz;
+
+          dd = 1.0 / sqrt(hx*hx+hy*hy+hz*hz);
+          hx *= dd;
+          hy *= dd;
+          hz *= dd;
+
+          new_h = new_atom();
+          new_h->x = atom->x + hx;
+          new_h->y = atom->y + hy;
+          new_h->z = atom->z + hz;
+          new_h->name = calloc(5,1);
+          strcpy(new_h->name, " H  ");
+          new_h->res = res;
+          new_h->flag = FLAG_BACKBONE;
+
+          // Add H after N
+          new_h->next = atom->next;
+          new_h->prev = atom;
+          if (atom->next) atom->next->prev = new_h;
+          atom->next = new_h;
+        }
+      }
+    }
+    res = res->next;
+  }
+}
+
 int main(int argc, char **argv)
 {
   int i, j, next;
@@ -3082,7 +3131,7 @@ int main(int argc, char **argv)
             case 'g': _PDB_SG=1; break;
             case 'x': _TIME_SEED=1; break;
             case 'o': _XVOLUME=0; break;
-            case 'h': _REBUILD_H=0; break;
+            case 'h': _GENERATE_HYDROGENS=1; break;
             case 'q': _BB_OPTIMIZE=1; break;
             case 'p': _CISPRO=1; break;
             case 'u':
@@ -3171,6 +3220,9 @@ int main(int argc, char **argv)
       if (_BB_OPTIMIZE) {
         optimize_backbone(chain);
       }
+    }
+    if (_GENERATE_HYDROGENS) {
+      add_hydrogens(chain);
     }
 #endif
 

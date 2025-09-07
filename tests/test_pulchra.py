@@ -96,7 +96,7 @@ def test_python_pulchra_hydrogens():
         output_pdb.unlink()
 
     # Construct the command
-    command = ["python", str(PROJECT_ROOT / "pulchra.py"), "--add-hydrogens", str(input_pdb)]
+    command = ["python", "-m", "pulchra.pulchra", "--add-hydrogens", str(input_pdb)]
 
     # Run the command
     subprocess.run(command, check=True, capture_output=True, text=True)

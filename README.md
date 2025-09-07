@@ -24,3 +24,11 @@ To build the C code and run the Python tests, you can use the provided `Makefile
     ```bash
     make run-tests
     ```
+
+## Running the Python version
+
+To run the Python version of Pulchra, you can use the following command:
+
+```bash
+python -m pulchra.pulchra <pdb_file>
+```

@@ -4,7 +4,10 @@ import argparse
 import sys
 from pathlib import Path
 
-def main():
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
     parser = argparse.ArgumentParser(
         description="PULCHRA Protein Chain Restoration Algorithm",
         formatter_class=argparse.RawTextHelpFormatter,
@@ -30,11 +33,11 @@ def main():
     parser.add_argument("-o", "--no_xvolume", action="store_true", help="Don't attempt to fix excluded volume conflicts")
     parser.add_argument("-z", "--no_chiral", action="store_true", help="Don't check amino acid chirality")
 
-    if len(sys.argv) == 1:
+    if not argv:
         parser.print_help(sys.stderr)
         sys.exit(1)
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.pdb_file:
         parser.error("the following arguments are required: pdb_file")

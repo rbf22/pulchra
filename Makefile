@@ -13,7 +13,7 @@ build:
 	(cd c_legacy/src && cc -O3 -o ../bin/pulchra pulchra.c pulchra_data.c -lm)
 
 run-tests: build
-	poetry run pytest -s --cov=. --cov-report=term-missing tests/
+	poetry run pytest -s tests/
 
 run-linter:
 	poetry run ruff check .

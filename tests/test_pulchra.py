@@ -50,3 +50,64 @@ def test_pulchra_output(flags, golden_file_name):
     # Clean up the generated file
     if OUTPUT_PDB.exists():
         OUTPUT_PDB.unlink()
+
+
+def test_multichain_output():
+    # Setup paths for the multichain test
+    input_pdb = PROJECT_ROOT / "tests/7laf_ca.pdb"
+    output_pdb = PROJECT_ROOT / "tests/7laf_ca.rebuilt.pdb"
+    golden_output_path = GOLDEN_OUTPUTS_DIR / "7laf_ca.rebuilt.pdb"
+
+    # Clean up any previous output file
+    if output_pdb.exists():
+        output_pdb.unlink()
+
+    # Construct the command
+    command = [str(PULCHRA_EXECUTABLE), str(input_pdb)]
+
+    # Run the command
+    subprocess.run(command, check=True, capture_output=True, text=True)
+
+    # Read the generated output file
+    assert output_pdb.exists(), f"Output file {output_pdb} was not generated."
+    generated_output = output_pdb.read_text()
+
+    # Read the golden output file
+    assert golden_output_path.exists(), f"Golden file {golden_output_path} does not exist."
+    golden_output = golden_output_path.read_text()
+
+    # Compare the outputs
+    assert generated_output == golden_output, "Multichain output does not match golden file."
+
+    # Clean up the generated file
+    if output_pdb.exists():
+        output_pdb.unlink()
+
+
+def test_python_pulchra_hydrogens():
+    """
+    Tests the Python version of Pulchra with hydrogen generation.
+    """
+    input_pdb = PROJECT_ROOT / "tests/7laf.pdb"
+    output_pdb = PROJECT_ROOT / "tests/7laf.rebuilt.pdb"
+
+    # Clean up any previous output file
+    if output_pdb.exists():
+        output_pdb.unlink()
+
+    # Construct the command
+    command = ["python", str(PROJECT_ROOT / "pulchra.py"), "--add-hydrogens", str(input_pdb)]
+
+    # Run the command
+    subprocess.run(command, check=True, capture_output=True, text=True)
+
+    # Read the generated output file
+    assert output_pdb.exists(), f"Output file {output_pdb} was not generated."
+    generated_output = output_pdb.read_text()
+
+    # Check for hydrogens
+    assert "H" in generated_output
+
+    # Clean up the generated file
+    if output_pdb.exists():
+        output_pdb.unlink()

@@ -274,3 +274,32 @@ def ca_optimize(chain, ca_trajectory, ini_file, cispro, ca_random, ca_start_dist
         last_gnorm = gnorm
 
         num_steps += 1
+
+def add_hydrogens(chain: Molecule):
+    """
+    Adds hydrogen atoms to the protein chain.
+    """
+    from .hydrogens import get_hydrogen_positions
+    from .pdb_datastructures import Atom
+
+    print("Adding hydrogens...")
+
+    prev_c_coord = None
+    for res in chain.residues:
+
+        heavy_atoms = {atom.name: np.array([atom.x, atom.y, atom.z]) for atom in res.atoms}
+
+        # Get the C-atom of the previous residue for amide H placement
+        if prev_c_coord is None and res.num > 1:
+            # This is a fallback for the first residue in a chain that is not the first chain
+            # A more robust solution would be to get the C atom from the previous residue object
+            pass
+
+        hydrogens = get_hydrogen_positions(res.name, heavy_atoms, prev_c=prev_c_coord)
+
+        for h_name, h_coords in hydrogens.items():
+            res.add_or_replace_atom(h_name, h_coords[0], h_coords[1], h_coords[2], 5)
+
+        # Store the C-atom of the current residue for the next iteration
+        if 'C' in heavy_atoms:
+            prev_c_coord = heavy_atoms['C']

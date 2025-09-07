@@ -9,30 +9,7 @@ def main():
         description="PULCHRA Protein Chain Restoration Algorithm",
         formatter_class=argparse.RawTextHelpFormatter,
         usage="%(prog)s [options] <pdb_file>",
-        add_help=False,
-        epilog="""\
-Valid options are:
-
-  -v : verbose output (default: off)
-  -n : center chain (default: off)
-  -x : time-seed random number generator (default: off)
-  -g : use PDBSG as an input format (CA=C-alpha, SC or CM=side chain c.m.)
-
-  -c : skip C-alpha positions optimization (default: on)
-  -p : detect cis-prolins (default: off)
-  -r : start from a random chain (default: off)
-  -i pdbfile : read the initial C-alpha coordinates from a PDB file
-  -t : save chain optimization trajectory to file <pdb_file.pdb.trajectory>
-  -u value : maximum shift from the restraint coordinates (default: 0.5A)
-
-  -e : rearrange backbone atoms (C, O are output after side chain) (default: off)
-  -b : skip backbone reconstruction (default: on)
-  -q : optimize backbone hydrogen bonds pattern (default: off)
-  -h : outputs hydrogen atoms (default: off)
-  -s : skip side chains reconstruction (default: on)
-  -o : don't attempt to fix excluded volume conflicts (default: on)
-  -z : don't check amino acid chirality (default: on)
-"""
+        add_help=True,
     )
     parser.add_argument("pdb_file", nargs="?", help="Input PDB file")
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
@@ -48,7 +25,7 @@ Valid options are:
     parser.add_argument("-e", "--bb_rearrange", action="store_true", help="Rearrange backbone atoms")
     parser.add_argument("-b", "--no_rebuild_bb", action="store_true", help="Skip backbone reconstruction")
     parser.add_argument("-q", "--bb_optimize", action="store_true", help="Optimize backbone hydrogen bonds pattern")
-    parser.add_argument("-h", "--generate_hydrogens", action="store_true", help="Outputs hydrogen atoms")
+    parser.add_argument("--add-hydrogens", action="store_true", help="Outputs hydrogen atoms")
     parser.add_argument("-s", "--no_rebuild_sc", action="store_true", help="Skip side chains reconstruction")
     parser.add_argument("-o", "--no_xvolume", action="store_true", help="Don't attempt to fix excluded volume conflicts")
     parser.add_argument("-z", "--no_chiral", action="store_true", help="Don't check amino acid chirality")
@@ -66,7 +43,7 @@ Valid options are:
     output_path = input_path.with_name(f"{input_path.stem}.rebuilt.pdb")
 
     from pulchra.pdb_parser import read_pdb_file
-    from pulchra.core import ca_optimize, rebuild_backbone, rebuild_sidechains
+    from pulchra.core import ca_optimize, rebuild_backbone, rebuild_sidechains, add_hydrogens
     from pulchra.pdb_writer import write_pdb
 
     molecule = read_pdb_file(input_path, input_path.name)
@@ -87,6 +64,9 @@ Valid options are:
 
         if not args.no_rebuild_sc and c_alpha and rbins:
             rebuild_sidechains(molecule, c_alpha, rbins)
+
+        if args.add_hydrogens:
+            add_hydrogens(molecule)
 
         write_pdb(molecule, output_path)
 
